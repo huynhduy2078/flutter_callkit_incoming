@@ -391,7 +391,7 @@ public class SwiftFlutterCallkitIncomingPlugin: NSObject, FlutterPlugin, CXProvi
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(5000)) {
                 action.fulfill()
             }
-        } else if counter > 180 { // fail if waiting for more then 3 minutes
+        } else if counter > 30 { // fail if waiting for more then 3 minutes
             action.fail()
         } else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
