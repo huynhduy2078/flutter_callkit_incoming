@@ -381,25 +381,24 @@ public class SwiftFlutterCallkitIncomingPlugin: NSObject, FlutterPlugin, CXProvi
             self.configurAudioSession()
         }
         self.answerCall = call
-        sendEvent(SwiftFlutterCallkitIncomingPlugin.ACTION_CALL_ACCEPT, self.data?.toJSON())
-        action.fulfill()
+        checkUnlockedAndFulfill(action: action, counter: 0)
     }
 
 
-    // private func checkUnlockedAndFulfill(action: CXAnswerCallAction, counter: Int) {
-    //     if UIApplication.shared.isProtectedDataAvailable {
-    //         sendEvent(SwiftFlutterCallkitIncomingPlugin.ACTION_CALL_ACCEPT, self.data?.toJSON())
-    //         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(5000)) {
-    //             action.fulfill()
-    //         }
-    //     } else if counter > 180 { // fail if waiting for more then 3 minutes
-    //         action.fail()
-    //     } else {
-    //         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-    //             self.checkUnlockedAndFulfill(action: action, counter: counter + 1)
-    //         }
-    //     }
-    // }
+    private func checkUnlockedAndFulfill(action: CXAnswerCallAction, counter: Int) {
+        if UIApplication.shared.isProtectedDataAvailable {
+            sendEvent(SwiftFlutterCallkitIncomingPlugin.ACTION_CALL_ACCEPT, self.data?.toJSON())
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(5000)) {
+                action.fulfill()
+            }
+        } else if counter > 180 { // fail if waiting for more then 3 minutes
+            action.fail()
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.checkUnlockedAndFulfill(action: action, counter: counter + 1)
+            }
+        }
+    }
     
 
     public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
